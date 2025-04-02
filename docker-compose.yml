@@ -2,8 +2,8 @@ version: "3.8"
 
 services:
   postgres:
-    image: ankane/pgvector
     container_name: ultrarag_postgres
+    image: ankane/pgvector:latest
     restart: always
     ports:
       - "5432:5432"
@@ -35,7 +35,7 @@ services:
       context: .
       dockerfile: docker/Dockerfile.fastapi
     ports:
-      - "8002:8000"
+      - "8000:8000"
     volumes:
       - ./apps/services/api:/app
       - ./apps/frontend:/app/frontend
@@ -118,8 +118,6 @@ services:
     depends_on:
       - postgres
     restart: unless-stopped
-
-  # New services from LibreChat
   librechat_rag_api:
     build:
       context: ./apps/services/librechat
@@ -132,6 +130,7 @@ services:
       - POSTGRES_USER=${POSTGRES_USER:-postgres}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-password123}
       - PORT=8008
+      - RAG_API_KEY=${RAG_API_KEY:-dev-rag-key}
     ports:
       - "8008:8008"
     depends_on:
@@ -156,6 +155,67 @@ services:
     environment:
       - MEILI_MASTER_KEY=${MEILI_MASTER_KEY:-your-meili-master-key}
       - MEILI_NO_ANALYTICS=true
+
+  redis:
+    image: redis:alpine
+    container_name: ultrarag_redis
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+
+  librechat:
+    container_name: ultrarag_librechat
+    ports:
+      - "${PORT:-3001}:${PORT:-3001}"
+    depends_on:
+      - mongodb
+      - librechat_rag_api
+      - redis
+    image: ghcr.io/danny-avila/librechat-dev:latest
+    restart: always
+    user: "${UID:-1000}:${GID:-1000}"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      - HOST=0.0.0.0
+      - MONGO_URI=mongodb://mongodb:27017/LibreChat
+      - MEILI_HOST=http://meilisearch:7700
+      - RAG_PORT=${RAG_PORT:-8008}
+      - RAG_API_URL=http://rag_api:${RAG_PORT:-8008}
+      - SECRET_KEY=${SECRET_KEY}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
+      - CRYPTO_KEY=${CRYPTO_KEY}
+      - CRYPTO_IV=${CRYPTO_IV}
+      - CRYPTO_ALGO=${CRYPTO_ALGO}
+      - CRYPTO_KEY_LENGTH=${CRYPTO_KEY_LENGTH}
+      - CRYPTO_IV_LENGTH=${CRYPTO_IV_LENGTH}
+      - CRYPTO_SALT_LENGTH=${CRYPTO_SALT_LENGTH}
+      - CRYPTO_TAG_LENGTH=${CRYPTO_TAG_LENGTH}
+      - CRYPTO_ITERATIONS=${CRYPTO_ITERATIONS}
+      - ANON_KEY=${ANON_KEY}
+      - CREDS_KEY=${CREDS_KEY}
+      - CREDS_IV=${CREDS_IV}
+      - ALLOW_UNVERIFIED_EMAIL_LOGIN=true
+      - ALLOW_REGISTRATION=true
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - NODE_ENV=development
+      - DEBUG=true
+      - ENDPOINTS=openAI,assistants,azureOpenAI,google,gptPlugins,anthropic
+      - ANTHROPIC_API_KEY=sk-ant-api01234-dev
+      - OPENAI_API_KEY=sk-openai-api01234-dev
+      - DEBUG_LOGGING=true
+      - DEBUG_CONSOLE=true
+    volumes:
+      - type: bind
+        source: ./.env
+        target: /app/.env
+      - ./images:/app/client/public/images
+      - ./uploads:/app/uploads
+      - ./logs:/app/api/logs
+    command: >
+      sh -c "./node_modules/.bin/cross-env NODE_ENV=development node api/server/index.js"
 
 volumes:
   pgdata:

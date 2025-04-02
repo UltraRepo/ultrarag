@@ -4,7 +4,7 @@ services:
   rag_api:
     build: .
     ports:
-      - "8000:8000"
+      - "8008:8008"
     volumes:
       - ./uploads:/app/uploads
     env_file:
