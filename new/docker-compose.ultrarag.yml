@@ -1,0 +1,63 @@
+
+version: '3.8'
+
+services:
+  postgres:
+    image: ankane/pgvector
+    container_name: ultrarag_postgres
+    environment:
+      POSTGRES_DB: db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password123
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  jena-fuseki:
+    image: stain/jena-fuseki
+    container_name: ultrarag_jena
+    ports:
+      - "3030:3030"
+    environment:
+      ADMIN_PASSWORD: admin
+    volumes:
+      - fuseki-data:/fuseki
+
+  librechat_rag_api:
+    build:
+      context: ./apps/services/librechat
+      dockerfile: Dockerfile  # You can rename or replace with specific Dockerfile if needed
+    container_name: ultrarag_rag_api
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      POSTGRES_DB: db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password123
+    ports:
+      - "8010:8000"
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
+  mongodb:
+    image: mongo
+    container_name: ultrarag_mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  meilisearch:
+    image: getmeili/meilisearch
+    container_name: ultrarag_meilisearch
+    ports:
+      - "7700:7700"
+    environment:
+      MEILI_NO_ANALYTICS: true
+
+volumes:
+  pgdata:
+  fuseki-data:
+  mongo-data:

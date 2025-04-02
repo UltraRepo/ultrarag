@@ -1,0 +1,8 @@
+fastapi==0.110.0
+uvicorn[standard]
+pydantic>=2.0
+python-dotenv
+httpx
+tortoise-orm
+jinja2
+pathspec==0.12.1

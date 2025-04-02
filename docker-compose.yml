@@ -1,0 +1,165 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: ankane/pgvector
+    container_name: ultrarag_postgres
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-password123}
+      - POSTGRES_DB=${POSTGRES_DB:-db}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  localai:
+    image: localai/localai:latest-aio-cpu
+    platform: linux/amd64
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./models:/build/models
+    environment:
+      - DEBUG=true
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/readyz"]
+      interval: 1m
+      timeout: 20m
+      retries: 5
+    restart: unless-stopped
+
+  fastapi:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.fastapi
+    ports:
+      - "8002:8000"
+    volumes:
+      - ./apps/services/api:/app
+      - ./apps/frontend:/app/frontend
+    environment:
+      - FASTAPI_PORT=${FASTAPI_PORT:-8000}
+    restart: unless-stopped
+
+  api-admin:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.api-admin
+    ports:
+      - "8500:8500"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-password123}@postgres:5432/${POSTGRES_DB:-db}
+      - ADMIN_SECRET=${ADMIN_SECRET:-your-admin-secret-key}
+    volumes:
+      - ./apps/services/admin-api:/app
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
+  jena-fuseki:
+    image: stain/jena-fuseki:latest
+    platform: linux/amd64
+    container_name: ultrarag_jena
+    ports:
+      - "${FUSEKI_PORT:-3030}:3030"
+    environment:
+      - ADMIN_PASSWORD=${FUSEKI_ADMIN_PASSWORD:-admin}
+    volumes:
+      - ./apps/services/jena-fuseki:/fuseki
+      - fuseki-data:/fuseki
+
+  flowise:
+    image: flowiseai/flowise
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - FLOWISE_USERNAME=${FLOWISE_USERNAME:-admin}
+      - FLOWISE_PASSWORD=${FLOWISE_PASSWORD:-secret}
+    volumes:
+      - ./apps/services/flowise:/root/.flowise
+
+  nginx-proxy-manager:
+    image: jc21/nginx-proxy-manager:latest
+    restart: always
+    ports:
+      - "80:80"
+      - "81:81"
+      - "443:443"
+    environment:
+      - DEFAULT_EMAIL=${NPM_EMAIL:-admin@example.com}
+      - DEFAULT_PASSWORD=${NPM_PASSWORD:-changeme}
+    volumes:
+      - ./apps/services/reverse-proxy/data:/data
+      - ./apps/services/reverse-proxy/letsencrypt:/etc/letsencrypt
+
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    ports:
+      - "8081:8080"
+    volumes:
+      - open-webui-data:/app/backend/data
+    environment:
+      - OLLAMA_API_BASE_URL=http://ollama:11434
+    restart: unless-stopped
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-admin@admin.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
+  # New services from LibreChat
+  librechat_rag_api:
+    build:
+      context: ./apps/services/librechat
+      dockerfile: Dockerfile
+    container_name: ultrarag_rag_api
+    environment:
+      - DB_HOST=${DB_HOST:-postgres}
+      - DB_PORT=${DB_PORT:-5432}
+      - POSTGRES_DB=${POSTGRES_DB:-db}
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-password123}
+      - PORT=8008
+    ports:
+      - "8008:8008"
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
+  mongodb:
+    image: mongo
+    container_name: ultrarag_mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    environment:
+      - MONGO_URI=${MONGO_URI:-mongodb://mongodb:27017/LibreChat}
+
+  meilisearch:
+    image: getmeili/meilisearch
+    container_name: ultrarag_meilisearch
+    ports:
+      - "7700:7700"
+    environment:
+      - MEILI_MASTER_KEY=${MEILI_MASTER_KEY:-your-meili-master-key}
+      - MEILI_NO_ANALYTICS=true
+
+volumes:
+  pgdata:
+  open-webui-data:
+  pgadmin_data:
+  fuseki-data:
+  mongo-data:

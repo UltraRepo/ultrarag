@@ -1,0 +1,23 @@
+
+# PostgreSQL Configuration
+POSTGRES_DB=db
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=password123
+DB_HOST=postgres
+DB_PORT=5432
+
+# MongoDB Configuration (optional)
+MONGODB_URI=mongodb://localhost:27017
+
+# Jena Fuseki Configuration
+FUSEKI_HOST=jena-fuseki
+FUSEKI_PORT=3030
+FUSEKI_ADMIN_PASSWORD=admin
+
+# MeiliSearch Configuration (optional)
+MEILI_HOST=http://meilisearch:7700
+MEILI_MASTER_KEY=
+
+# OpenAI / Embedding Configuration (if applicable)
+OPENAI_API_KEY=your-openai-api-key
+EMBEDDING_MODEL=all-MiniLM-L6-v2

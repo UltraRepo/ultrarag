@@ -1,0 +1,12 @@
+---
+description: Use this project file schema for additional information on the project schema and structure.
+globs: *.json
+alwaysApply: false
+---
+
+# Your rule content
+globs: ["repo-schema.json"]
+alwaysApply: true
+[repo-schema.json](mdc:repo-schema.json)
+
+

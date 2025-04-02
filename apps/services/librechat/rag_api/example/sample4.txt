@@ -1,0 +1,40 @@
+# Git Version Control System
+
+Git is a distributed version control system designed to handle everything from small to very large projects with speed and efficiency.
+
+## Key Concepts
+- Repository: Storage location for a project
+- Commit: Snapshot of changes to files
+- Branch: Independent line of development
+- Merge: Combining changes from different branches
+- Remote: A repository hosted on a server (like GitHub)
+
+## Common Operations
+- Tracking changes
+- Branching and merging
+- Collaborating with others
+- Reverting to previous states
+- Comparing changes over time
+
+## Basic Commands
+```bash
+# Initialize a new Git repository
+git init
+
+# Add files to staging area
+git add file.txt
+
+# Commit changes
+git commit -m "Add initial files"
+
+# Create and switch to a new branch
+git checkout -b feature-branch
+
+# Merge changes from another branch
+git merge feature-branch
+
+# Push changes to a remote repository
+git push origin main
+```
+
+Git was created by Linus Torvalds in 2005 for development of the Linux kernel and has become the most widely used version control system in software development. 

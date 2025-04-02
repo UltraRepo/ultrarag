@@ -1,0 +1,11 @@
+
+fastapi
+uvicorn
+langchain==0.3.12
+sentence_transformers==3.1.1
+pgvector==0.2.5
+pypdf==4.1.0
+openai
+pandas
+rdflib
+requests

@@ -1,0 +1,43 @@
+# SQL Database Fundamentals
+
+SQL (Structured Query Language) is a domain-specific language used for managing and manipulating relational databases.
+
+## Key Concepts
+- Tables: Collections of related data organized in rows and columns
+- Queries: Commands to retrieve or manipulate data
+- Primary Keys: Unique identifiers for records in a table
+- Foreign Keys: Fields that link to primary keys in other tables
+- Indexes: Data structures that improve query performance
+
+## Common Operations
+- Creating and modifying database structures (DDL)
+- Inserting, updating, and deleting data (DML)
+- Retrieving data with SELECT statements
+- Joining tables to combine related data
+- Aggregating data with functions like COUNT, SUM, AVG
+
+## Basic SQL Examples
+```sql
+-- Create a table
+CREATE TABLE employees (
+    employee_id INT PRIMARY KEY,
+    first_name VARCHAR(50),
+    last_name VARCHAR(50),
+    hire_date DATE,
+    department_id INT
+);
+
+-- Insert data
+INSERT INTO employees VALUES (1, 'John', 'Doe', '2023-01-15', 101);
+
+-- Query data
+SELECT first_name, last_name FROM employees WHERE department_id = 101;
+
+-- Update data
+UPDATE employees SET department_id = 102 WHERE employee_id = 1;
+
+-- Delete data
+DELETE FROM employees WHERE employee_id = 1;
+```
+
+SQL databases are widely used in business applications, web services, and data analysis due to their reliability and structured approach to data management. 

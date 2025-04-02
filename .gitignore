@@ -1,0 +1,135 @@
+# Ignore Python cache
+__pycache__/
+*.py[cod]
+*.so
+
+# Ignore environment files
+.env
+.env.*
+
+# Ignore virtual environments
+venv/
+env/
+.venv/
+ENV/
+.Python
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Ignore logs
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Ignore compiled code
+*.class
+*.o
+*.out
+
+# Ignore IDE settings
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# Ignore node_modules if used in frontend
+node_modules/
+jspm_packages/
+
+# Ignore build artifacts
+dist/
+build/
+*.egg-info/
+*.egg
+develop-eggs/
+downloads/
+eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+
+# Ignore Docker volumes
+volumes/
+*.pid
+docker-compose.override.yml
+
+# Ignore temporary files
+*.swp
+*.tmp
+*.bak
+*.orig
+
+# Ignore libraries
+libs/
+*.sqlite
+*.conf
+*.sqlite
+*.sqlite
+/backend/reverse-proxy/data
+/backend/reverse-proxy
+backend/reverse-proxy/data/database.sqlite
+backend/reverse-proxy/data/database.sqlite
+*.sqlite
+/backend/reverse-proxy/data
+backend/reverse-proxy/data/database.sqlite
+
+# Security and keys
+*.keys
+*.pem
+*.crt
+*.csr
+*.key
+*.csr
+*.key
+*key.json
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Ignore AI models:
+/models
+/models/*
+*.bin
+*.gguf
+*.onnx
+
+# Python testing
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.pytest_cache/
+cover/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Local development
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+## repo-schema AI files 
+repo-schema.md
+repo-schema.json

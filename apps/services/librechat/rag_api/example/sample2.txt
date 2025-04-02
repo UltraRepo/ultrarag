@@ -1,0 +1,32 @@
+# JavaScript Fundamentals
+
+JavaScript is a versatile programming language primarily used for web development to create interactive elements.
+
+## Key Features
+- Client-side scripting language
+- Event-driven programming
+- Prototype-based object orientation
+- First-class functions
+- Dynamic typing
+
+## Common Uses
+- Web development (frontend)
+- Server-side programming (Node.js)
+- Mobile app development (React Native)
+- Game development
+- Desktop applications (Electron)
+
+## Basic Syntax Example
+```javascript
+// This is a simple JavaScript program
+function greet(name) {
+  // This function greets the person passed in as a parameter
+  return `Hello, ${name}!`;
+}
+
+// Call the function
+const message = greet("World");
+console.log(message); // Output: Hello, World!
+```
+
+JavaScript is one of the core technologies of the World Wide Web, alongside HTML and CSS. 
